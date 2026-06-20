@@ -1,4 +1,4 @@
-# soksak-plugin-pin
+# soksak-plugin-overlay-draw
 
 화면 위에 연필로 자유롭게 적고 그리는 **낙서 오버레이** soksak 플러그인.
 
@@ -28,9 +28,9 @@
 ## 깨끗한 스크린샷 (도구 없이 낙서만)
 
 ```
-sok plugin.soksak-plugin-pin.tools '{"show":false}'   # 도구 가리기
+sok plugin.soksak-plugin-overlay-draw.tools '{"show":false}'   # 도구 가리기
 sok window.snapshot '{"path":"/tmp/shot.png"}'        # 낙서만 캡처
-sok plugin.soksak-plugin-pin.tools '{"show":true}'    # 도구 다시 열기
+sok plugin.soksak-plugin-overlay-draw.tools '{"show":true}'    # 도구 다시 열기
 ```
 
 ## 개발

@@ -1,9 +1,9 @@
 {
   "spec": "soksak-plugin-spec@1",
-  "id": "soksak-plugin-pin",
+  "id": "soksak-plugin-overlay-draw",
   "name": { "en": "Pin Doodle", "ko": "Pin 낙서" },
   "version": "0.1.0",
-  "repo": "https://github.com/soksak-ai/soksak-plugin-pin.git",
+  "repo": "https://github.com/soksak-ai/soksak-plugin-overlay-draw.git",
   "description": { "en": "Freehand drawing overlay on top of the screen. In draw mode use the pen to doodle; outside draw mode clicks pass through but the drawing stays visible and appears in screenshots. Color, width, eraser, undo, clear.", "ko": "화면 위에 연필로 자유롭게 적고 그리는 낙서 오버레이. 그리기 모드를 켜면 펜으로 낙서하고, 끄면 클릭은 통과하되 낙서는 화면에 남아 스크린샷에도 잡힌다. 색·굵기·지우개·되돌리기·지우기." },
   "entry": "main.js",
   "permissions": ["ui:overlay:screen", "ui:titlebar", "commands"],

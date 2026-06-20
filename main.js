@@ -1,4 +1,4 @@
-// soksak-plugin-pin — 화면 위 낙서 오버레이.
+// soksak-plugin-overlay-draw — 화면 위 낙서 오버레이.
 //
 // sakura 패턴: position:fixed;inset:0 캔버스 1장을 document.body 에 붙인다(DOM 오버레이라 window.snapshot 에
 // 잡힘 — 요구사항). 그리기 모드 OFF=pointer-events:none(낙서는 보이되 클릭 통과), ON=auto(펜으로 자유 낙서).

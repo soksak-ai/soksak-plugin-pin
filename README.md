@@ -1,4 +1,4 @@
-# soksak-plugin-pin
+# soksak-plugin-overlay-draw
 
 A **freehand drawing overlay** soksak plugin — draw and write anything on screen with a
 pen.
@@ -32,9 +32,9 @@ screenshots.**
 ## Clean Screenshot (drawing only, no toolbar)
 
 ```
-sok plugin.soksak-plugin-pin.tools '{"show":false}'   # hide toolbar
+sok plugin.soksak-plugin-overlay-draw.tools '{"show":false}'   # hide toolbar
 sok window.snapshot '{"path":"/tmp/shot.png"}'        # capture drawing only
-sok plugin.soksak-plugin-pin.tools '{"show":true}'    # restore toolbar
+sok plugin.soksak-plugin-overlay-draw.tools '{"show":true}'    # restore toolbar
 ```
 
 ## Development
