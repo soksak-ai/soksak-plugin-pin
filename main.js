@@ -234,14 +234,15 @@ export default {
     setDraw(false);
 
     // ── 커맨드(전부 노출 — E2E·AI) ──
-    // description = 상황·역할 박힌 한 줄(코어 패턴). stub 금지: AI 가 "사용자가 화면/뷰에 그림·표시·주석을
-    // 그렸다" 발화를 이 도메인으로 매칭하려면 트리거 맥락이 description 에 있어야 한다(이름만으론 발견 0).
-    const reg = (n, description, params, h) =>
-      ctx.subscriptions.push(app.commands.register(n, { description, params, handler: h }));
+    // description = English base (what/when/why). triggers.ko = Korean vocabulary for discovery.
+    // i18n two-axis rule: English matching base + per-language trigger words (space-separated).
+    const reg = (n, description, triggers, params, h) =>
+      ctx.subscriptions.push(app.commands.register(n, { description, triggers, params, handler: h }));
 
     reg(
       "toggle",
-      "화면 낙서/주석 오버레이 켜기/끄기 — 앱·뷰·브라우저 위에 펜으로 직접 선·글씨·동그라미를 그리는 모드. 사용자가 '화면에 그렸다/표시했다/낙서했다/주석 달았다'거나 그려달라 하면 이 도메인(pin)부터 본다.",
+      "Toggle screen doodle overlay — draw lines, text, circles on app/browser/view with a pen. Use when user says they marked, drew, annotated, or doodled on screen, or asks to draw on screen.",
+      { ko: "낙서 그리기 표시 주석 켜기 끄기 오버레이" },
       { on: { type: "boolean", description: "true=켜기, false=끄기, 생략=토글" } },
       (p) => {
         setDraw(typeof (p && p.on) === "boolean" ? p.on : !state.drawing);
@@ -250,7 +251,8 @@ export default {
     );
     reg(
       "color",
-      "낙서 펜 색 바꾸기 — 이후 그리는 선의 CSS 색(빨강#ff3b30·파랑#0a84ff 등). 지우개 모드면 펜으로 돌린다.",
+      "Set doodle pen color — changes the CSS color for subsequent strokes. Switches out of eraser mode. Use when user asks to change pen/stroke color.",
+      { ko: "낙서 펜 색 색상 바꾸기 변경" },
       { color: { type: "string", description: "CSS 색(예 #0a84ff, red)" } },
       (p) => {
         if (p && p.color) {
@@ -263,7 +265,8 @@ export default {
     );
     reg(
       "width",
-      "낙서 펜 굵기 — 이후 그리는 선의 두께(px, 1~64). 가는 선↔굵은 강조선.",
+      "Set doodle pen width — changes stroke thickness in px (1–64). Use when user asks for a thinner or thicker pen.",
+      { ko: "낙서 펜 굵기 두께 선 굵기 변경" },
       { px: { type: "number", description: "펜 굵기 1~64" } },
       (p) => {
         const w = Math.max(1, Math.min(64, Math.round(Number(p && p.px) || state.width)));
@@ -274,7 +277,8 @@ export default {
     );
     reg(
       "eraser",
-      "지우개 모드 — 켜면 그은 낙서를 펜으로 문질러 부분 지운다(전부 지우기=clear, 한 획 취소=undo 와 별개).",
+      "Toggle eraser mode — rub out drawn strokes by dragging over them. Distinct from clear (wipes all) and undo (removes last stroke). Use when user asks to erase or rub out part of a doodle.",
+      { ko: "지우개 지우기 모드 켜기 끄기" },
       { on: { type: "boolean", description: "true=지우개, false=펜, 생략=토글" } },
       (p) => {
       state.eraser = typeof (p && p.on) === "boolean" ? p.on : !state.eraser;
@@ -283,7 +287,8 @@ export default {
     });
     reg(
       "stroke",
-      "낙서 한 획을 좌표로 직접 그린다 — 사람 드래그 없이 프로그램·AI 가 화면에 선·도형·동그라미·주석을 그릴 때. points=[[x,y],...] 화면 픽셀. 특정 위치(로고·버튼·영역)를 표시·강조하라는 요청에 쓴다.",
+      "Draw one stroke programmatically via coordinates — lets AI or automation mark/highlight a specific position (logo, button, area) on screen without human drag. Use when user asks AI to annotate or point to something on screen.",
+      { ko: "낙서 획 그리기 좌표 프로그램 AI 주석 강조 표시" },
       {
         points: { type: "array", required: true, description: "[[x,y],...] 화면 픽셀 좌표(한 획)" },
         color: { type: "string", description: "이 획 색(생략=현재 색)" },
@@ -311,7 +316,8 @@ export default {
     );
     reg(
       "tools",
-      "낙서 도구 툴바 가리기/열기 — 스크린샷 직전 도구만 숨겨 낙서·주석만 깨끗이 캡처한다(낙서·그리기 모드는 유지). window.snapshot 전 show:false → 캡처 → show:true 패턴.",
+      "Hide or show the doodle toolbar — useful to hide the UI before taking a screenshot so only strokes are visible (drawing mode and strokes are preserved). Pattern: tools(show:false) → snapshot → tools(show:true).",
+      { ko: "도구 툴바 숨기기 보이기 스크린샷 캡처 전" },
       { show: { type: "boolean", description: "true=도구 열기, false=가리기, 생략=토글" } },
       (p) => {
         state.toolsHidden = typeof (p && p.show) === "boolean" ? !p.show : !state.toolsHidden;
@@ -319,17 +325,18 @@ export default {
         return { toolsHidden: state.toolsHidden, visible: state.drawing && !state.toolsHidden };
       },
     );
-    reg("undo", "마지막에 그린 낙서 한 획을 되돌린다(취소). 방금 그린 표시가 맘에 안 들 때.", {}, () => {
+    reg("undo", "Undo the last doodle stroke. Use when user says the last mark was wrong or wants it removed.", { ko: "낙서 되돌리기 취소 마지막 획" }, {}, () => {
       doUndo();
       return { strokes: strokes.length };
     });
-    reg("clear", "화면의 낙서·주석을 전부 지운다(빈 캔버스로). 표시를 싹 없앨 때.", {}, () => {
+    reg("clear", "Clear all doodles and annotations from the screen (blank canvas). Use when user asks to remove all marks.", { ko: "낙서 전부 지우기 초기화 다 지워" }, {}, () => {
       doClear();
       return { strokes: 0 };
     });
     reg(
       "state",
-      "현재 낙서 상태 읽기 — 그리기 모드 여부·펜 색·굵기·지우개·그린 획 수·도구 숨김. 사용자가 화면에 그린 표시가 뭔지/몇 개인지 확인할 때.",
+      "Read current doodle state — drawing mode, pen color, width, eraser mode, stroke count, toolbar visibility. Use when checking what is drawn or how many strokes are on screen.",
+      { ko: "낙서 상태 확인 현재 모드 획 수" },
       {},
       () => ({
         drawing: state.drawing,
